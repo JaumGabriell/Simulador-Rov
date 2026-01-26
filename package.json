@@ -1,0 +1,24 @@
+{
+  "name": "simulador-rov",
+  "version": "3.0.0",
+  "description": "Alpha Subsea - ROV Professional Training Simulator",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js",
+    "serve": "PORT=8090 node server/server.js"
+  },
+  "keywords": [
+    "rov",
+    "simulator",
+    "training",
+    "subsea",
+    "threejs",
+    "3d"
+  ],
+  "author": "Alpha Subsea",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
