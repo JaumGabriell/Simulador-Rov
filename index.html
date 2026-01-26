@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alpha Subsea | ROV Training Simulator - Seleção de Cenários</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #00ff88;
+        --secondary: #00aaff;
+        --background: #0a0e14;
+        --surface: #161d26;
+        --surface-light: #1c252f;
+        --text: #e8f4f8;
+        --text-muted: #8ba4b4;
+        --border: rgba(0, 255, 136, 0.2);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Rajdhani", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--surface) 0%,
+          var(--background) 100%
+        );
+        border-bottom: 1px solid var(--border);
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary) 0%, #00cc6a 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .logo h1 {
+        font-family: "Orbitron", monospace;
+        font-size: 1.5rem;
+        color: var(--primary);
+      }
+
+      .logo span {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .section-title {
+        font-family: "Orbitron", monospace;
+        font-size: 1.2rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .section-title::before {
+        content: "◆";
+        font-size: 0.8rem;
+      }
+
+      .scenarios-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .scenario-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .scenario-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 40px rgba(0, 255, 136, 0.15);
+      }
+
+      .scenario-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .scenario-card:hover::before {
+        opacity: 1;
+      }
+
+      .scenario-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(0, 255, 136, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 1rem;
+      }
+
+      .scenario-card h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .scenario-card p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      .scenario-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .scenario-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .difficulty {
+        display: flex;
+        gap: 2px;
+      }
+
+      .difficulty-star {
+        color: #ffaa00;
+      }
+
+      .difficulty-star.empty {
+        color: #333;
+      }
+
+      .category-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .category-inspection {
+        background: rgba(0, 170, 255, 0.2);
+        color: #00aaff;
+      }
+
+      .category-skill {
+        background: rgba(0, 255, 136, 0.2);
+        color: #00ff88;
+      }
+
+      .category-emergency {
+        background: rgba(255, 68, 68, 0.2);
+        color: #ff4444;
+      }
+
+      .category-training {
+        background: rgba(255, 170, 0, 0.2);
+        color: #ffaa00;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-family: "Rajdhani", sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #0a0e14;
+      }
+
+      .btn-primary:hover {
+        background: #00cc6a;
+        transform: scale(1.05);
+      }
+
+      .footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .footer a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">🤖</div>
+        <div>
+          <h1>ALPHA SUBSEA</h1>
+          <span>ROV Training Simulator v3.0</span>
+        </div>
+      </div>
+      <a href="gerenciador.html" class="btn btn-primary">⚙ Gerenciador</a>
+    </header>
+
+    <div class="container">
+      <!-- Cenários de Inspeção -->
+      <h2 class="section-title">Cenários de Inspeção</h2>
+      <div class="scenarios-grid">
+
+        <div class="scenario-card" onclick="startScenario('p66_inspection')">
+          <span class="category-badge category-inspection">Inspeção</span>
+          <div class="scenario-icon">🚢</div>
+          <h3>Inspeção 3D Real</h3>
+          <p>Inspecione o tanque P66</p>
+          <div class="scenario-meta">
+            <span>📍 0-50m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('fpso_inspection')">
+          <span class="category-badge category-inspection">Inspeção</span>
+          <div class="scenario-icon">🚢</div>
+          <h3>Inspeção de FPSO</h3>
+          <p>Inspecione o casco do FPSO, sea chests, propulsor e anodos</p>
+          <div class="scenario-meta">
+            <span>📍 0-50m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star empty">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('pipeline_survey')">
+          <span class="category-badge category-inspection">Inspeção</span>
+          <div class="scenario-icon">🔧</div>
+          <h3>Levantamento de Duto</h3>
+          <p>Siga o pipeline documentando anomalias e cruzamentos</p>
+          <div class="scenario-meta">
+            <span>📍 50-200m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 7 tasks</span>
+          </div>
+        </div>
+
+        <div
+          class="scenario-card"
+          onclick="startScenario('manifold_operations')"
+        >
+          <span class="category-badge category-inspection">Operação</span>
+          <div class="scenario-icon">⚙️</div>
+          <h3>Operações em Manifold</h3>
+          <p>Opere válvulas e inspecione conexões do manifold</p>
+          <div class="scenario-meta">
+            <span>📍 100-180m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 7 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('jacket_navigation')">
+          <span class="category-badge category-inspection">Navegação</span>
+          <div class="scenario-icon">🏗️</div>
+          <h3>Navegação em Jaqueta</h3>
+          <p>Navegue pela estrutura complexa da jaqueta</p>
+          <div class="scenario-meta">
+            <span>📍 80-150m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 7 tasks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cenários de Habilidade -->
+      <h2 class="section-title">Cenários de Habilidade</h2>
+      <div class="scenarios-grid">
+        <div class="scenario-card" onclick="startScenario('ballast_tank')">
+          <span class="category-badge category-skill">Habilidade</span>
+          <div class="scenario-icon">🏊</div>
+          <h3>Tanque de Lastro</h3>
+          <p>Navegue pelo tanque com vigas, tubulações e passagens estreitas</p>
+          <div class="scenario-meta">
+            <span>📍 2-15m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('free_fly')">
+          <span class="category-badge category-skill">Habilidade</span>
+          <div class="scenario-icon">🎯</div>
+          <h3>Slalom de Precisão</h3>
+          <p>Complete o percurso de slalom passando pelos portões</p>
+          <div class="scenario-meta">
+            <span>📍 0-20m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star empty">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('maze_challenge')">
+          <span class="category-badge category-skill">Habilidade</span>
+          <div class="scenario-icon">🧩</div>
+          <h3>Labirinto Subaquático</h3>
+          <p>Encontre a saída do labirinto sem bater nas paredes</p>
+          <div class="scenario-meta">
+            <span>📍 0-12m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('time_trial')">
+          <span class="category-badge category-skill">Velocidade</span>
+          <div class="scenario-icon">⏱️</div>
+          <h3>Corrida Contra o Tempo</h3>
+          <p>Complete todos os checkpoints no menor tempo</p>
+          <div class="scenario-meta">
+            <span>📍 0-25m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star empty">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('training_arena')">
+          <span class="category-badge category-skill">Habilidade</span>
+          <div class="scenario-icon">🎪</div>
+          <h3>Circuito de Obstáculos</h3>
+          <p>Passe pelos anéis e túnel sem colidir</p>
+          <div class="scenario-meta">
+            <span>📍 0-20m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star empty">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('low_visibility')">
+          <span class="category-badge category-skill">Avançado</span>
+          <div class="scenario-icon">🌫️</div>
+          <h3>Águas Turvas</h3>
+          <p>Navegue com visibilidade de apenas 3 metros</p>
+          <div class="scenario-meta">
+            <span>📍 0-20m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 6 tasks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cenários de Emergência -->
+      <h2 class="section-title">Cenários de Emergência</h2>
+      <div class="scenarios-grid">
+        <div class="scenario-card" onclick="startScenario('wreck_exploration')">
+          <span class="category-badge category-emergency">Emergência</span>
+          <div class="scenario-icon">🚨</div>
+          <h3>Resgate em Naufrágio</h3>
+          <p>Entre no navio afundado e recupere a caixa preta</p>
+          <div class="scenario-meta">
+            <span>📍 30-45m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 8 tasks</span>
+          </div>
+        </div>
+
+        <div class="scenario-card" onclick="startScenario('rescue_mission')">
+          <span class="category-badge category-emergency">Emergência</span>
+          <div class="scenario-icon">🆘</div>
+          <h3>Resgate de Emergência</h3>
+          <p>Localize e resgate equipamento perdido em condições adversas</p>
+          <div class="scenario-meta">
+            <span>📍 20-40m</span>
+            <span class="difficulty">
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+              <span class="difficulty-star">★</span>
+            </span>
+            <span>📋 7 tasks</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>
+        Alpha Subsea ROV Training Simulator v3.0 |
+        <a href="gerenciador.html">Gerenciador de Cenários</a>
+      </p>
+    </footer>
+
+    <script>
+      function startScenario(scenarioId) {
+        // Usar versão modular
+        window.location.href = `simulator.html?scenario=${scenarioId}`;
+      }
+    </script>
+  </body>
+</html>

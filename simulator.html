@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alpha Subsea | ROV Professional Training Simulator v3.0</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- CSS Modular -->
+    <link rel="stylesheet" href="src/css/simulator.css" />
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div class="loading-content">
+        <div class="loading-logo">
+          <div class="logo-icon">AS</div>
+          <div class="logo-text">ALPHA <span>SUBSEA</span></div>
+        </div>
+        <div class="loading-title">ROV SIMULATOR</div>
+        <div class="loading-bar-container">
+          <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        <div class="loading-status" id="loading-status">Initializing...</div>
+      </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app">
+      <!-- Header -->
+      <header id="header">
+        <div class="logo">
+          <div class="logo-icon">AS</div>
+          <div class="logo-text">ALPHA <span>SUBSEA</span> | ROV SIMULATOR</div>
+        </div>
+        <div class="session-info">
+          <div class="session-badge recording">
+            <div class="icon"></div>
+            <span>REC</span>
+          </div>
+          <div class="session-badge" id="scenario-badge">
+            <span id="scenario-name">Carregando...</span>
+          </div>
+          <div class="rov-selector">
+            <div class="rov-option selected" id="rov-pi" data-model="rov_pi">
+              <span>ROV PI</span>
+            </div>
+            <div class="rov-option" id="rov-omega" data-model="rov_omega">
+              <span>ROV OMEGA</span>
+            </div>
+          </div>
+          <div class="clock" id="clock">00:00:00</div>
+        </div>
+      </header>
+
+      <!-- Left Panel -->
+      <aside id="left-panel">
+        <div class="panel-section">
+          <div class="panel-title">Thrusters</div>
+          <div class="thruster-grid">
+            <div class="thruster-indicator" id="thr-fp" style="--thrust: 0%">
+              <span class="thruster-label">FP</span>
+              <span class="thruster-value">0%</span>
+            </div>
+            <div class="thruster-indicator" id="thr-fs" style="--thrust: 0%">
+              <span class="thruster-label">FS</span>
+              <span class="thruster-value">0%</span>
+            </div>
+            <div class="thruster-indicator" id="thr-ap" style="--thrust: 0%">
+              <span class="thruster-label">AP</span>
+              <span class="thruster-value">0%</span>
+            </div>
+            <div class="thruster-indicator" id="thr-as" style="--thrust: 0%">
+              <span class="thruster-label">AS</span>
+              <span class="thruster-value">0%</span>
+            </div>
+            <div class="thruster-indicator" id="thr-vfp" style="--thrust: 0%">
+              <span class="thruster-label">VFP</span>
+              <span class="thruster-value">0%</span>
+            </div>
+            <div class="thruster-indicator" id="thr-vfs" style="--thrust: 0%">
+              <span class="thruster-label">VFS</span>
+              <span class="thruster-value">0%</span>
+            </div>
+            <div class="thruster-indicator" id="thr-vap" style="--thrust: 0%">
+              <span class="thruster-label">VAP</span>
+              <span class="thruster-value">0%</span>
+            </div>
+            <div class="thruster-indicator" id="thr-vas" style="--thrust: 0%">
+              <span class="thruster-label">VAS</span>
+              <span class="thruster-value">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-title">ROV Status</div>
+          <div class="status-grid">
+            <div class="status-item">
+              <div class="status-label">Armed</div>
+              <div class="status-value" id="status-armed">YES</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Lights</div>
+              <div class="status-value" id="status-lights">100%</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Speed</div>
+              <div class="status-value" id="status-speed">100%</div>
+            </div>
+            <div class="status-item">
+              <div class="status-label">Tether</div>
+              <div class="status-value" id="status-tether">125m</div>
+            </div>
+          </div>
+          <!-- Barra de Dano -->
+          <div style="margin-top: 10px">
+            <div class="status-label" style="margin-bottom: 5px">
+              HULL INTEGRITY
+            </div>
+            <div
+              style="
+                background: #1a1a2e;
+                border-radius: 5px;
+                height: 20px;
+                overflow: hidden;
+                border: 1px solid #333;
+              "
+            >
+              <div
+                id="damage-bar"
+                style="
+                  width: 0%;
+                  height: 100%;
+                  background: #00ff88;
+                  transition: all 0.3s;
+                "
+              ></div>
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 3px;
+              "
+            >
+              <span style="color: #666; font-size: 10px">DAMAGE</span>
+              <span
+                id="damage-value"
+                style="color: #00ff88; font-size: 12px; font-weight: bold"
+                >0%</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-title">Controls</div>
+          <div class="controls-list">
+            <div class="control-row">
+              <span class="key">W</span>
+              <span class="key">S</span>
+              <span class="control-desc">Forward / Backward</span>
+            </div>
+            <div class="control-row">
+              <span class="key">A</span>
+              <span class="key">D</span>
+              <span class="control-desc">Strafe Left / Right</span>
+            </div>
+            <div class="control-row">
+              <span class="key">Q</span>
+              <span class="key">E</span>
+              <span class="control-desc">Ascend / Descend</span>
+            </div>
+            <div class="control-row">
+              <span class="key">←</span>
+              <span class="key">→</span>
+              <span class="control-desc">Yaw Left / Right</span>
+            </div>
+            <div class="control-row">
+              <span class="key">↑</span>
+              <span class="key">↓</span>
+              <span class="control-desc">Pitch Up / Down</span>
+            </div>
+            <div class="control-row">
+              <span class="key">L</span>
+              <span class="control-desc">Toggle Lights</span>
+            </div>
+            <div class="control-row">
+              <span class="key">SPACE</span>
+              <span class="control-desc">Arm / Disarm</span>
+            </div>
+            <div class="control-row">
+              <span class="key">C</span>
+              <span class="control-desc">Cycle Camera</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 3D Viewport -->
+      <main id="viewport-container">
+        <canvas id="viewport"></canvas>
+
+        <!-- HUD Overlay -->
+        <div id="hud">
+          <!-- Camera Info -->
+          <div class="camera-info">
+            <span class="label" id="camera-label">MAIN CAM</span>
+          </div>
+
+          <!-- Compass -->
+          <div class="compass">
+            <div class="compass-indicator"></div>
+            <div class="compass-track">
+              <div class="compass-tape" id="compass-tape">
+                <span class="compass-marker cardinal">N</span>
+                <span class="compass-marker">015</span>
+                <span class="compass-marker">030</span>
+                <span class="compass-marker">045</span>
+                <span class="compass-marker cardinal">E</span>
+                <span class="compass-marker">105</span>
+                <span class="compass-marker">120</span>
+                <span class="compass-marker">135</span>
+                <span class="compass-marker cardinal">S</span>
+                <span class="compass-marker">195</span>
+                <span class="compass-marker">210</span>
+                <span class="compass-marker">225</span>
+                <span class="compass-marker cardinal">W</span>
+                <span class="compass-marker">285</span>
+                <span class="compass-marker">300</span>
+                <span class="compass-marker">315</span>
+                <span class="compass-marker cardinal">N</span>
+              </div>
+            </div>
+            <div class="compass-reading" id="compass-reading">000°</div>
+          </div>
+
+          <!-- Warnings -->
+          <div class="warning-panel" id="warning-panel"></div>
+
+          <!-- Depth Ladder -->
+          <div class="depth-ladder">
+            <div class="ladder-label">DEPTH</div>
+            <div class="ladder-track">
+              <div class="ladder-scale" id="depth-scale"></div>
+              <div class="ladder-pointer">
+                <span id="depth-value">50.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Altitude Ladder -->
+          <div class="altitude-ladder">
+            <div class="ladder-label">ALT</div>
+            <div class="ladder-track">
+              <div class="ladder-scale" id="alt-scale"></div>
+              <div class="ladder-pointer">
+                <span id="alt-value">10.0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Crosshair -->
+          <div class="crosshair">
+            <svg viewBox="0 0 60 60">
+              <circle
+                cx="30"
+                cy="30"
+                r="6"
+                fill="none"
+                stroke="var(--primary)"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <line
+                x1="30"
+                y1="0"
+                x2="30"
+                y2="20"
+                stroke="var(--primary)"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <line
+                x1="30"
+                y1="40"
+                x2="30"
+                y2="60"
+                stroke="var(--primary)"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <line
+                x1="0"
+                y1="30"
+                x2="20"
+                y2="30"
+                stroke="var(--primary)"
+                stroke-width="1"
+                opacity="0.5"
+              />
+              <line
+                x1="40"
+                y1="30"
+                x2="60"
+                y2="30"
+                stroke="var(--primary)"
+                stroke-width="1"
+                opacity="0.5"
+              />
+            </svg>
+          </div>
+
+          <!-- Artificial Horizon -->
+          <div class="horizon">
+            <div class="horizon-ball">
+              <div class="horizon-sky" id="horizon-sky"></div>
+              <div class="horizon-lines">
+                <div class="horizon-line"></div>
+              </div>
+              <div class="horizon-wings">
+                <svg viewBox="0 0 80 30">
+                  <path
+                    d="M0 15 L20 15 L25 20 L30 15 L50 15 L55 20 L60 15 L80 15"
+                    fill="none"
+                    stroke="var(--warning)"
+                    stroke-width="3"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div class="pitch-indicator" id="pitch-indicator">P: 0.0°</div>
+            <div class="roll-indicator" id="roll-indicator">R: 0.0°</div>
+          </div>
+
+          <!-- Speed Display -->
+          <div class="speed-display">
+            <div class="label">Speed</div>
+            <div class="value" id="speed-value">
+              0.00<span class="unit">kn</span>
+            </div>
+          </div>
+
+          <!-- Scanlines & Vignette -->
+          <div class="scanlines"></div>
+          <div class="vignette"></div>
+        </div>
+      </main>
+
+      <!-- Right Panel -->
+      <aside id="right-panel">
+        <div class="panel-section">
+          <div class="panel-title">Telemetry</div>
+          <div class="telemetry-grid">
+            <div class="telem-item">
+              <div class="telem-label">Depth</div>
+              <div class="telem-value">
+                <span id="telem-depth">50.0</span
+                ><span class="telem-unit">m</span>
+              </div>
+            </div>
+            <div class="telem-item">
+              <div class="telem-label">Altitude</div>
+              <div class="telem-value">
+                <span id="telem-alt">10.0</span
+                ><span class="telem-unit">m</span>
+              </div>
+            </div>
+            <div class="telem-item">
+              <div class="telem-label">Heading</div>
+              <div class="telem-value">
+                <span id="telem-hdg">000</span><span class="telem-unit">°</span>
+              </div>
+            </div>
+            <div class="telem-item">
+              <div class="telem-label">Speed</div>
+              <div class="telem-value">
+                <span id="telem-spd">0.00</span
+                ><span class="telem-unit">kn</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="panel-title">Position</div>
+          <div class="position-display">
+            <div class="coord-row">
+              <span class="coord-label">X:</span>
+              <span class="coord-value" id="pos-x">0.00 m</span>
+            </div>
+            <div class="coord-row">
+              <span class="coord-label">Y:</span>
+              <span class="coord-value" id="pos-y">0.00 m</span>
+            </div>
+            <div class="coord-row">
+              <span class="coord-label">Z:</span>
+              <span class="coord-value" id="pos-z">-50.00 m</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="panel-section"
+          style="
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          "
+        >
+          <div class="panel-title">Objectives</div>
+          <div class="objectives-list" id="objectives-list">
+            <!-- Objetivos serão preenchidos dinamicamente -->
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="score-display">
+            <div class="score-label">SCORE</div>
+            <div class="score-value" id="score-value">0</div>
+            <div class="score-grade">
+              GRADE: <span id="grade-value">--</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Bottom Panel -->
+      <footer id="bottom-panel">
+        <div class="bottom-section">
+          <div class="panel-title">Event Log</div>
+          <div class="event-log" id="event-log"></div>
+        </div>
+
+        <div class="bottom-section">
+          <div class="timeline-container">
+            <div class="timeline-header">
+              <div class="timeline-time" id="timeline-time">
+                00:00:00 / 00:45:00
+              </div>
+              <div class="timeline-controls">
+                <button class="timeline-btn" id="btn-record" title="Record">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="8" />
+                  </svg>
+                </button>
+                <button
+                  class="timeline-btn active"
+                  id="btn-play"
+                  title="Play/Pause"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="6" y="4" width="4" height="16" />
+                    <rect x="14" y="4" width="4" height="16" />
+                  </svg>
+                </button>
+                <button class="timeline-btn" id="btn-stop" title="Stop">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="6" width="12" height="12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="timeline-track">
+              <div
+                class="timeline-progress"
+                id="timeline-progress"
+                style="width: 0%"
+              ></div>
+              <div class="timeline-markers" id="timeline-markers"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-section">
+          <div class="panel-title">System Status</div>
+          <div class="system-grid">
+            <div class="system-item ok">
+              <div class="system-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12" y2="8" />
+                </svg>
+              </div>
+              <div class="system-name">Comms</div>
+            </div>
+            <div class="system-item ok">
+              <div class="system-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"
+                  />
+                </svg>
+              </div>
+              <div class="system-name">Video</div>
+            </div>
+            <div class="system-item ok">
+              <div class="system-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="2" y="7" width="20" height="14" rx="2" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+              </div>
+              <div class="system-name">Power</div>
+            </div>
+            <div class="system-item ok">
+              <div class="system-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+                  />
+                </svg>
+              </div>
+              <div class="system-name">Navigation</div>
+            </div>
+            <div class="system-item ok">
+              <div class="system-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="3" />
+                  <path
+                    d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+                  />
+                </svg>
+              </div>
+              <div class="system-name">Sensors</div>
+            </div>
+            <div class="system-item ok">
+              <div class="system-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path
+                    d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+                  />
+                </svg>
+              </div>
+              <div class="system-name">Recording</div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- App Bootstrap - Carrega módulos ES6 -->
+    <script type="module">
+      import { ROVSimulator } from "./src/js/core/ROVSimulator.js";
+
+      // Inicializar simulador quando DOM estiver pronto
+      window.addEventListener("DOMContentLoaded", () => {
+        window.simulator = new ROVSimulator();
+        // init() é chamado automaticamente no construtor
+      });
+    </script>
+  </body>
+</html>
