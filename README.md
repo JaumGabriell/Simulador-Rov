@@ -140,11 +140,3 @@ Abra o arquivo `index.html` diretamente no navegador (algumas funcionalidades po
 5. ✅ **Loaders** → `src/js/loaders/`
    - `model-loader.js` - Carregador STL/OBJ
 
-### Arquivo Original
-
-O arquivo `rov_simulator_pro.html` permanece funcional e contém o código completo.
-Os módulos extraídos podem ser usados para criar uma versão modular futura.
-
-## 📄 Licença
-
-MIT License - Alpha Subsea
